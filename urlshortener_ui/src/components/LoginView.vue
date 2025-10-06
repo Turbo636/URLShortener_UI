@@ -22,9 +22,9 @@
 
 <script setup>
 import { ref } from 'vue'
-// import { useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 
-// const router = useRouter()
+const router = useRouter()
 const email = ref('')
 const password = ref('')
 const error = ref('')
@@ -32,26 +32,29 @@ const error = ref('')
 const login = async () => {
   error.value = ''
   try {
-    const response = await fetch('http://localhost:5000/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: email.value,
-        password: password.value,
-      }),
-    })
+    // const response = await fetch('http://localhost:5000/api/login', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({
+    //     email: email.value,
+    //     password: password.value,
+    //   }),
+    // })
 
-    if (!response.ok) {
-      const errData = await response.json()
-      throw new Error(errData.message || 'Login failed')
-    }
+    // if (!response.ok) {
+    //   // try to read server error message, fall back to generic
+    //   const errData = await response.json().catch(() => ({}))
+    //   throw new Error(errData.message || 'Login failed')
+    // }
 
-    const data = await response.json()
-    localStorage.setItem('token', data.token)
+    // const data = await response.json()
+    // if (data.token) {
+    //   localStorage.setItem('token', data.token)
+    // }
 
-    // router.push('/dashboard')
+    router.push('/dashboard')
   } catch (err) {
-    error.value = err.message
+    error.value = err.message || 'Login failed'
   }
 }
 </script>
