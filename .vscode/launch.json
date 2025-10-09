@@ -9,5 +9,11 @@
       "webRoot": "${workspaceFolder}/src",
       "sourceMaps": true
     }
+  ],
+  "compounds": [
+    {
+      "name": "Launch Vue in Browser",
+      "configurations": ["Vue: Chrome"]
+    }
   ]
 }

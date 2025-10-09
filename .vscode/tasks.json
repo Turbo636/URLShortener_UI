@@ -1,0 +1,19 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "npm: serve (urlshortener_ui)",
+      "type": "shell",
+      "command": "npm run serve",
+      "options": {
+        "cwd": "${workspaceFolder}/urlshortener_ui"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "isBackground": true,
+      "problemMatcher": []
+    }
+  ]
+}
