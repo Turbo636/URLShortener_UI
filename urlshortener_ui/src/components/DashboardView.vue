@@ -11,6 +11,10 @@
                 Welcome to your Dashboard 🎉
               </h1>
             </div>
+
+            <div>
+              <p class="text-gray-600"><strong class="text-gray-800">Wallet Balance:</strong> asdf</p>
+            </div>
             
             <button 
               @click="logout" 
@@ -28,7 +32,7 @@
               <p class="text-gray-600"><strong class="text-gray-800">Name:</strong> asdf</p>
               <p class="text-gray-600"><strong class="text-gray-800">Surname:</strong> asdf</p>
               <p class="text-gray-600"><strong class="text-gray-800">Email:</strong> asdf</p>
-              <p class="text-gray-600"><strong class="text-gray-800">Wallet Balance:</strong> asdf</p>
+              
             </div>
           </div>
 
@@ -39,17 +43,65 @@
             </h2>
             <div class="actions-grid">
               <div class="urlCreation">
-                <label class="block text-gray-700 mb-2 font-medium">Create new URL:</label>
-                <button class="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+                <!-- <label class="block text-gray-700 mb-2 font-medium">Create new URL:</label> -->
+                <button class="dashboardBtns" @click="showCreateUrlForm">
                   Create URL
                 </button>
               </div>
               <div class="viewWallet">
-                <label class="block text-gray-700 mb-2 font-medium">View Clicks:</label>
-                <button class="w-full bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">
+                <!-- <label class="block text-gray-700 mb-2 font-medium">View Clicks:</label> -->
+                <button class="dashboardBtns" @click="showClicksTable">
                   View Clicks
                 </button>
               </div>
+            </div>
+              <div class="actions">
+                <div class="mb-8" v-if="newUrlRequired">
+                  <h3 class="text-lg font-medium mb-3 text-gray-700">Create a New Short URL</h3>
+                  <form @submit.prevent="createUrl" class="flex gap-2">
+                    <input
+                      v-model="newUrl"
+                      type="text"
+                      placeholder="Enter your long URL"
+                      class="flex-1 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <button class="dashboardBtns" type="submit">
+                      Submit
+                    </button>
+                  </form>
+                </div>
+                <div v-if="showTableClicks" class="tableClick mt-8">
+                  <h3 class="text-lg font-medium mb-3 text-gray-700">URL Click Statistics</h3>
+                  <table >
+                    <thead class="bg-gray-100">
+                      <tr>
+                        <th class="border border-gray-200 px-3 py-2 text-left">Short URL</th>
+                        <th class="border border-gray-200 px-3 py-2 text-left">Original URL</th>
+                        <th class="border border-gray-200 px-3 py-2 text-center">Clicks</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="(item, index) in clickData" :key="index">
+                        <td class="border border-gray-200 px-3 py-2 text-blue-600 underline">
+                          {{ item.shortUrl }}
+                        </td>
+                        <td class="border border-gray-200 px-3 py-2 truncate">
+                          {{ item.originalUrl }}
+                        </td>
+                        <td class="border border-gray-200 px-3 py-2 text-center">
+                          {{ item.clicks }}
+                        </td>
+                      </tr>
+
+                      <tr v-if="clickData.length === 0">
+                        <td colspan="3" class="text-center py-3 text-gray-500">
+                          No data found
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <!-- </div> -->
             </div>
           </div>
         </div>
@@ -67,6 +119,35 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const userData = ref('')
+const newUrl = ref('')
+const newUrlRequired = ref(false)
+const showTableClicks = ref(false)
+
+
+const showCreateUrlForm = () => {
+  newUrlRequired.value = true
+  showTableClicks.value = false
+}
+
+const showClicksTable = () => {
+  showTableClicks.value = true
+  newUrlRequired.value = false
+}
+
+const createUrl = () => {
+  if (!newUrl.value) return alert('Please enter a URL')
+
+  // Here you would typically send newUrl.value to your backend to create the short URL
+  console.log('Creating short URL for:', newUrl.value)
+
+  // Reset input field after submission
+  newUrl.value = ''
+}
+
+const clickData = ref([
+  { shortUrl: 'abc123', originalUrl: 'https://example.com/product/123', clicks: 12 },
+  { shortUrl: 'xyz789', originalUrl: 'https://mywebsite.com/page', clicks: 5 }
+])
 
 onMounted(() => {
   console.log('DashboardView mounted')
@@ -133,9 +214,39 @@ const logout = () => {
 justify-content: center;
   button {
     margin-top: 0.5rem;
-    
+    padding: 0.5rem 1.5rem;
+    border-radius: 0.375rem;
+    color: white;
+    cursor: pointer;
+    background: linear-gradient(135deg, #1e3ec8 0%, #253174 100%);
+    transition: transform 0.2s;
   }
 }
 
+.dashboardBtns {
+  
+    margin-top: 0.5rem;
+    padding: 0.5rem 1.5rem;
+    border-radius: 0.375rem;
+    color: white;
+    cursor: pointer;
+    background: linear-gradient(135deg, #1e3ec8 0%, #253174 100%);
+    transition: transform 0.2s;
+}
+
+.tableClick {
+  display: grid;
+  align-items: center;
+  justify-content: center;
+  max-height: 400px; /* Adjust as needed */
+  overflow-y: auto;
+  /* table {
+    background-color: red;
+  } */
+}
+
+.dashboardBtns:hover, .urlCreation button:hover, .viewWallet button:hover, .logoutBtn:hover {
+    transform: scale(1.05);
+}
 
 </style>
