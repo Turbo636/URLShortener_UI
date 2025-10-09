@@ -45,6 +45,8 @@ import { ref } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 
+const apiBaseUrl = "https://localhost:7282/api"
+
 export default {
   name: 'LoginForm',
   setup() {
@@ -57,26 +59,28 @@ export default {
     
     const loading = ref(false);
     const error = ref('');
+    const baseUrl = apiBaseUrl
 
     const handleLogin = async () => {
       loading.value = true;
       error.value = '';
+      let url = baseUrl + '/login';
 
       try {
         console.log('Attempting login with', credentials.value);
-        const response = await axios.post('https://localhost:7282/api/url', {
+        const response = await axios.post(url, {
           username: credentials.value.username,
           password: credentials.value.password
         });
 
         // Store the JWT token
-        // const token = response.data.token;
-        // localStorage.setItem('jwt_token', token);
+        const token = response.data.token;
+        localStorage.setItem('jwt_token', token);
         
         // Store user info if provided
-        // if (response.data.user) {
-        //   localStorage.setItem('user', JSON.stringify(response.data.user));
-        // }
+        if (response.data.user) {
+          localStorage.setItem('user', JSON.stringify(response.data.user));
+        }
 
         // Redirect or emit success event
         console.log('Login successful', response.data);

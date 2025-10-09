@@ -29,9 +29,9 @@
               User Information
             </h2>
             <div class="space-y-3 text-center">
-              <p class="text-gray-600"><strong class="text-gray-800">Name:</strong> asdf</p>
-              <p class="text-gray-600"><strong class="text-gray-800">Surname:</strong> asdf</p>
-              <p class="text-gray-600"><strong class="text-gray-800">Email:</strong> asdf</p>
+              <p class="text-gray-600"><strong class="text-gray-800">Name:</strong> {{firstName}}</p>
+              <p class="text-gray-600"><strong class="text-gray-800">Surname:</strong> {{lastName}}</p>
+              <p class="text-gray-600"><strong class="text-gray-800">Email:</strong> {{email}}</p>
               
             </div>
           </div>
@@ -121,16 +121,22 @@
 </template>
 
 <script setup>
+import axios from 'axios'
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
+const apiBaseUrl = "https://localhost:7282/api"
+
 const router = useRouter()
-const userData = ref('')
 const newUrl = ref('')
 const newUrlRequired = ref(false)
 const showTableClicks = ref(false)
 const showUrlCreated = ref(false)
 const url = ref('')
+
+const firstName = ref('')
+const lastName = ref('')
+const email = ref('')
 
 
 const showCreateUrlForm = () => {
@@ -145,17 +151,39 @@ const showClicksTable = () => {
   showUrlCreated.value = false
 }
 
-const createUrl = () => {
-  if (!newUrl.value) return alert('Please enter a URL')
+const createUrl = async () => {
+  if (!newUrl.value) return alert('Please enter a URL');
 
-  // Here you would typically send newUrl.value to your backend to create the short URL
-  console.log('Creating short URL for:', newUrl.value)
+  const token = localStorage.getItem('jwt_token');
+  if (!token) {
+    router.push('/login');
+    return;
+  }
 
-  // Reset input field after submission
-  newUrl.value = ''
-  showUrlCreated.value = true
-  url.value = 'https://localhost:3232/WWci3' // This should be set to the actual created URL from backend
-}
+  try {
+    const user = JSON.parse(localStorage.getItem('user'));
+    const response = await axios.post(
+      apiBaseUrl + '/url',
+      { url: newUrl.value , user: user }, // send JSON with a property called "url"
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    console.log('Short URL created:', response.data);
+    newUrl.value = '';
+    showUrlCreated.value = true;
+    url.value = response.data.shortUrl; // Assuming the backend returns the created short URL in response.data.shortUrl
+  } catch (error) {
+    console.error('Error creating short URL:', error);
+    if (error.response?.status === 401) {
+      router.push('/login');
+    }
+  }
+};
 
 const clickData = ref([
   { shortUrl: 'abc123', originalUrl: 'https://example.com/product/123', clicks: 12 },
@@ -163,8 +191,18 @@ const clickData = ref([
 ])
 
 onMounted(() => {
-  console.log('DashboardView mounted')
-  console.log(userData.value)
+  const token = localStorage.getItem('jwt_token')
+  if (!token) {
+    router.push('/login')
+  } else {
+    // Fetch user data from local storage or make an API call
+    const user = JSON.parse(localStorage.getItem('user'))
+    if (user) {
+      firstName.value = user.firstName || ''
+      lastName.value = user.lastName || ''
+      email.value = user.email || ''
+    }
+  }
 })
 
 const logout = () => {
