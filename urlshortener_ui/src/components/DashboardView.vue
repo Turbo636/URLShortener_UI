@@ -58,17 +58,24 @@
               <div class="actions">
                 <div class="mb-8" v-if="newUrlRequired">
                   <h3 class="text-lg font-medium mb-3 text-gray-700">Create a New Short URL</h3>
-                  <form @submit.prevent="createUrl" class="flex gap-2">
+                  <form @submit.prevent="createUrl" class="create-url">
                     <input
                       v-model="newUrl"
                       type="text"
                       placeholder="Enter your long URL"
-                      class="flex-1 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     <button class="dashboardBtns" type="submit">
                       Submit
                     </button>
                   </form>
+                  <div class="urlResponse" v-if="showUrlCreated">
+                    <label >New URL Created:</label>
+  
+                    <!-- Display the new short URL -->
+                    <span class="newUrlCreated"><b>{{url}}</b></span>
+
+                  </div>
+                  
                 </div>
                 <div v-if="showTableClicks" class="tableClick mt-8">
                   <h3 class="text-lg font-medium mb-3 text-gray-700">URL Click Statistics</h3>
@@ -82,19 +89,19 @@
                     </thead>
                     <tbody>
                       <tr v-for="(item, index) in clickData" :key="index">
-                        <td class="border border-gray-200 px-3 py-2 text-blue-600 underline">
+                        <td >
                           {{ item.shortUrl }}
                         </td>
-                        <td class="border border-gray-200 px-3 py-2 truncate">
+                        <td >
                           {{ item.originalUrl }}
                         </td>
-                        <td class="border border-gray-200 px-3 py-2 text-center">
+                        <td >
                           {{ item.clicks }}
                         </td>
                       </tr>
 
                       <tr v-if="clickData.length === 0">
-                        <td colspan="3" class="text-center py-3 text-gray-500">
+                        <td colspan="3" >
                           No data found
                         </td>
                       </tr>
@@ -122,16 +129,20 @@ const userData = ref('')
 const newUrl = ref('')
 const newUrlRequired = ref(false)
 const showTableClicks = ref(false)
+const showUrlCreated = ref(false)
+const url = ref('')
 
 
 const showCreateUrlForm = () => {
   newUrlRequired.value = true
   showTableClicks.value = false
+  showUrlCreated.value = false
 }
 
 const showClicksTable = () => {
   showTableClicks.value = true
   newUrlRequired.value = false
+  showUrlCreated.value = false
 }
 
 const createUrl = () => {
@@ -142,6 +153,8 @@ const createUrl = () => {
 
   // Reset input field after submission
   newUrl.value = ''
+  showUrlCreated.value = true
+  url.value = 'https://localhost:3232/WWci3' // This should be set to the actual created URL from backend
 }
 
 const clickData = ref([
@@ -224,7 +237,6 @@ justify-content: center;
 }
 
 .dashboardBtns {
-  
     margin-top: 0.5rem;
     padding: 0.5rem 1.5rem;
     border-radius: 0.375rem;
@@ -240,13 +252,40 @@ justify-content: center;
   justify-content: center;
   max-height: 400px; /* Adjust as needed */
   overflow-y: auto;
+  width: 100%;
   /* table {
     background-color: red;
   } */
 }
 
+.create-url {
+  input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #2c3e50;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+    box-sizing: border-box;
+  }
+}
+
 .dashboardBtns:hover, .urlCreation button:hover, .viewWallet button:hover, .logoutBtn:hover {
     transform: scale(1.05);
+}
+
+.urlResponse {
+  display: grid;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
+  padding: 0.5rem 1.5rem;
+}
+
+.newUrlCreated {
+  margin-top: 2%;
+  color: #3182ce; /* Blue-600 */
+  text-decoration: underline;
 }
 
 </style>
