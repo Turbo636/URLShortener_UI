@@ -64,6 +64,11 @@
                       type="text"
                       placeholder="Enter your long URL"
                     />
+                    <input
+                      v-model="shortUrl"
+                      type="text"
+                      placeholder="Enter your short URL"
+                    />
                     <button class="dashboardBtns" type="submit">
                       Submit
                     </button>
@@ -129,6 +134,7 @@ const apiBaseUrl = "https://localhost:7282/api"
 
 const router = useRouter()
 const newUrl = ref('')
+const shortUrl = ref('')
 const newUrlRequired = ref(false)
 const showTableClicks = ref(false)
 const showUrlCreated = ref(false)
@@ -162,9 +168,10 @@ const createUrl = async () => {
 
   try {
     const user = JSON.parse(localStorage.getItem('user'));
+    const sUrl = shortUrl.value ? shortUrl.value : null;
     const response = await axios.post(
       apiBaseUrl + '/url',
-      { url: newUrl.value , user: user }, // send JSON with a property called "url"
+      { longUrl: newUrl.value, shortUrl: sUrl , user: user }, // send JSON with a property called "url"
       {
         headers: {
           Authorization: `Bearer ${token}`,
